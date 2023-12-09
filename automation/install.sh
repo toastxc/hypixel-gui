@@ -8,7 +8,7 @@ sudo cp ./target/release/hypixel-gui /bin/hypixel-gui
 # install application
 echo "[Desktop Entry]
       Name=Hypixel
-      Exec=sudo /bin/hypixel-gui
+      Exec=/bin/hypixel-gui
       Icon=/path/to/your/icon.png
       Type=Application
       Categories=Utility;
