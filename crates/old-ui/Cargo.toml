@@ -1,0 +1,16 @@
+[package]
+name = "ui"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+
+[dependencies]
+tokio = { version = "1.34.0", features = ["macros", "rt-multi-thread"] }
+serde = "1.0.193"
+serde_json = "1.0.108"
+#reywen_http = {path = "/home/kaiaxc/Documents/Projects/Reywen/reywen-http", version = "0.1.17"}
+druid = {version = "0.8.3", features = ["im"]}
+engine= { path = "/home/kaiaxc/Documents/Projects/hypixel/crates/engine"}
