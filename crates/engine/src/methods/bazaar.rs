@@ -74,7 +74,7 @@ impl From<DataInti> for ProfitInfo {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Data, Lens)]
+#[derive(Debug, Serialize, Deserialize, Clone, Data, Lens, Default)]
 pub struct ProfitInfo {
     pub item_name: String,
 
@@ -87,6 +87,17 @@ pub struct ProfitInfo {
     pub weekly_sell_orders: i32,
 }
 
+impl ProfitInfo {
+    pub fn display(&self) -> String {
+        format!("Bazaar Buy Price: {}\nBazaar Sell Price: {}\nFlip Value: {}\nWeekly Buy Orders: {}\nWeekly Sell Orders: {}",
+            self.bazaar_buy_price,
+            self.bazaar_sell_price,
+            self.flip_value,
+            self.weekly_buy_orders,
+            self.weekly_sell_orders
+        )
+    }
+}
 impl From<ProductDataSummary> for ProfitInfo {
     fn from(value: ProductDataSummary) -> Self {
         Self {

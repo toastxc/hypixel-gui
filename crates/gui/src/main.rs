@@ -1,6 +1,8 @@
+use eframe::{HardwareAcceleration, Renderer, Theme};
 use engine::methods::bazaar::ProfitInfo;
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
+
 pub mod process;
 pub mod view;
 
@@ -8,6 +10,12 @@ fn main() -> Result<(), eframe::Error> {
     env_logger::init();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default().with_inner_size([480.0, 480.0]),
+        vsync: true,
+        hardware_acceleration: HardwareAcceleration::Preferred,
+        renderer: Renderer::Glow,
+        follow_system_theme: true,
+        default_theme: Theme::Dark,
+        centered: false,
         ..Default::default()
     };
     eframe::run_native(
@@ -41,8 +49,31 @@ pub struct SearchFields {
     order_total: String,
     name: String,
     filter: ItemProperty,
+    sort_by: SortInfo,
+}
+#[derive(Debug, Clone, Default)]
+pub struct SortInfo {
+    pub sort_by: SortBy,
+    pub inverted: bool,
+}
+#[derive(Debug, PartialEq, Clone, Default)]
+pub enum SortBy {
+    #[default]
+    FlipValue,
+    WeeklyOrders,
+    Az,
 }
 
+impl ToString for SortBy {
+    fn to_string(&self) -> String {
+        match self {
+            SortBy::FlipValue => "Flip Value",
+            SortBy::WeeklyOrders => "Weekly Orders",
+            SortBy::Az => "A-Z",
+        }
+        .to_string()
+    }
+}
 #[derive(Debug, Clone, Default, PartialEq)]
 pub enum ItemProperty {
     Book,

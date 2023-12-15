@@ -1,12 +1,10 @@
-use crate::{ItemProperty, MyApp};
+use crate::{ItemProperty, MyApp, SortBy};
 use engine::methods::bazaar::ProfitInfo;
 use engine::Hypixel;
-use std::sync::{mpsc, Arc};
+use std::sync::Arc;
 
 impl MyApp {
-    pub fn click_add_find_button<'a>(&'a self) {
-      //  let (sender, receiver) = mpsc::channel();
-
+    pub fn click_add_find_button(&self) {
         let runtime = Arc::clone(&self.runtime);
         let original_data = Arc::clone(&self.original_data);
         runtime.spawn(async move {
@@ -16,18 +14,12 @@ impl MyApp {
 
             let mut write = original_data.write().unwrap();
             write.clear();
-            write.extend(a.into_iter());
-
-            // sender.send(a).unwrap();
+            write.extend(a);
 
             let done = std::time::SystemTime::now().duration_since(now);
             println!("request elapsed: {:?}", done);
         });
-
-        //  self.original_data = receiver.recv().unwrap();
     }
-
-
 
     pub fn calculate(&mut self) {
         let polled_data = self.original_data.clone();
@@ -40,45 +32,53 @@ impl MyApp {
                     && a.weekly_buy_orders != 0
                     && a.bazaar_buy_price > a.bazaar_sell_price
                 // optional search fields
-                && { a.weekly_buy_orders + a.weekly_sell_orders }
-                     > self.search_fields.order_total.parse().unwrap_or_default()
+                && { a.weekly_buy_orders + a.weekly_sell_orders } as i64
+                     > self.search_fields.order_total.parse::<i64>().unwrap_or_default()
                 && a.flip_value > self.search_fields.profit_total.parse().unwrap_or_default()
                 && a.item_name.contains::<&String>(&self.search_fields.name.to_ascii_uppercase().chars()
                     .map(|c| if c == '_' { ' ' } else { c })
                     .collect())
                     // special case
-                && {
-                    if self.search_fields.filter.is_block() {
+                && name_correct(&a.item_name, &self.search_fields.filter)
 
-                        a.item_name.contains("BLOCK") && a.item_name.contains("ENCHANTED")
-
-                    }else {
-                        a.item_name.contains(&self.search_fields.filter.to_string().to_ascii_uppercase())
-                    }
-                }
             })
             .collect();
 
-        // sorted
-        polled_data.sort_by_key(|item| {
-            (item.flip_value as i32, {
-                item.weekly_buy_orders + item.weekly_sell_orders
-            })
-        });
+        match self.search_fields.sort_by.sort_by {
+            SortBy::FlipValue => polled_data.sort_by_key(|a| a.flip_value as i32),
+            SortBy::WeeklyOrders => {
+                polled_data.sort_by_key(|a| (a.weekly_sell_orders, a.weekly_buy_orders))
+            }
+            SortBy::Az => polled_data.sort_by_key(|a| a.item_name.clone()),
+        }
+        if self.search_fields.sort_by.inverted {
+            polled_data.reverse();
+        }
         self.processed_data = polled_data;
     }
 }
 
-impl ToString for ItemProperty {
-    fn to_string(&self) -> String {
-        match self {
-            ItemProperty::Book => "book",
-            ItemProperty::Enchanted => "enchanted",
-            ItemProperty::EnchantedBlock => "block",
-            ItemProperty::Experience => "experience",
-            ItemProperty::Essence => "essence",
-            ItemProperty::Other => "",
+fn name_correct(name: &str, properties: &ItemProperty) -> bool {
+    for check in properties.check() {
+        if !name.contains(check.to_ascii_uppercase().as_str()) {
+            return false;
         }
-        .to_string()
+    }
+    true
+}
+
+impl ItemProperty {
+    fn check(&self) -> Vec<String> {
+        match self {
+            ItemProperty::Book => vec!["book"],
+            ItemProperty::Enchanted => vec!["enchanted"],
+            ItemProperty::EnchantedBlock => vec!["block", "enchanted"],
+            ItemProperty::Experience => vec!["experience"],
+            ItemProperty::Essence => vec!["essence"],
+            ItemProperty::Other => Vec::new(),
+        }
+        .iter()
+        .map(|a| a.to_string())
+        .collect()
     }
 }

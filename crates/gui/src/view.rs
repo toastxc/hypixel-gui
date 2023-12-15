@@ -1,5 +1,7 @@
-use crate::{ItemProperty, MyApp};
-use egui::CollapsingHeader;
+use crate::{ItemProperty, MyApp, SortBy};
+use egui::{CollapsingResponse, ComboBox, Ui};
+
+use engine::methods::bazaar::ProfitInfo;
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
@@ -28,18 +30,55 @@ impl eframe::App for MyApp {
             ui.horizontal(|ui| {
                 ui.radio_value(&mut self.search_fields.filter, ItemProperty::Other, "Other");
                 ui.radio_value(&mut self.search_fields.filter, ItemProperty::Book, "Book");
-
                 ui.radio_value(
                     &mut self.search_fields.filter,
                     ItemProperty::Enchanted,
                     "Enchanted",
                 );
-
                 ui.radio_value(
                     &mut self.search_fields.filter,
                     ItemProperty::EnchantedBlock,
                     "Enchanted Block",
                 );
+                ui.radio_value(
+                    &mut self.search_fields.filter,
+                    ItemProperty::Experience,
+                    "Experience",
+                );
+
+                ui.radio_value(
+                    &mut self.search_fields.filter,
+                    ItemProperty::Essence,
+                    "Essence",
+                )
+            });
+
+            // combo
+
+            ui.horizontal(|ui| {
+                ComboBox::from_label("Sort By")
+                    .selected_text(String::from(
+                        &self.search_fields.sort_by.sort_by.to_string(),
+                    ))
+                    .show_ui(ui, |ui| {
+                        ui.selectable_value(
+                            &mut self.search_fields.sort_by.sort_by,
+                            SortBy::Az,
+                            "A-Z",
+                        );
+                        ui.selectable_value(
+                            &mut self.search_fields.sort_by.sort_by,
+                            SortBy::FlipValue,
+                            "Flip Value",
+                        );
+                        ui.selectable_value(
+                            &mut self.search_fields.sort_by.sort_by,
+                            SortBy::WeeklyOrders,
+                            "Weekly Orders",
+                        );
+                    });
+
+                ui.checkbox(&mut self.search_fields.sort_by.inverted, "Inverted");
             });
 
             // UI buttons
@@ -49,47 +88,29 @@ impl eframe::App for MyApp {
                 }
             });
 
-            egui::ScrollArea::vertical().show(ui, |ui| {
-                for item in &self.processed_data {
-                    let text: String = item
-                        .item_name
-                        .to_ascii_lowercase()
-                        .chars()
-                        .map(|c| if c == '_' { ' ' } else { c })
-                        .collect();
+            ui.separator();
 
-                    CollapsingHeader::new(text).show(ui, |ui| {
-                        // bazaar buy price
-                        ui.horizontal(|ui| {
-                            ui.label("Bazaar Buy Price: ");
-                            ui.label(item.bazaar_buy_price.to_string());
-                        });
-
-                        // bazaar sell price
-                        ui.horizontal(|ui| {
-                            ui.label("Bazaar Sell Price: ");
-                            ui.label(item.bazaar_sell_price.to_string());
-                        });
-
-                        // flip value
-                        ui.horizontal(|ui| {
-                            ui.label("Flip Value: ");
-                            ui.label(item.flip_value.to_string());
-                        });
-
-                        // weekly buy orders
-                        ui.horizontal(|ui| {
-                            ui.label("Weekly Buy Orders: ");
-                            ui.label(item.weekly_buy_orders.to_string());
-                        });
-                        // weekly sell orders
-                        ui.horizontal(|ui| {
-                            ui.label("Weekly Sell Orders: ");
-                            ui.label(item.weekly_sell_orders.to_string());
-                        });
-                    });
-                }
-            });
+            egui::ScrollArea::vertical()
+                .auto_shrink([false; 2])
+                .show(ui, |ui| {
+                    for item in &self.processed_data {
+                        container(item, ui);
+                    }
+                })
         });
     }
+}
+
+pub fn container(inner: &ProfitInfo, ui: &mut Ui) -> CollapsingResponse<()> {
+    ui.collapsing(
+        inner
+            .item_name
+            .to_ascii_lowercase()
+            .chars()
+            .map(|c| if c == '_' { ' ' } else { c })
+            .collect::<String>(),
+        |ui| {
+            ui.label(inner.display());
+        },
+    )
 }

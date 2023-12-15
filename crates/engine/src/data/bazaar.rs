@@ -60,3 +60,11 @@ pub struct ProductDataSummary {
     pub product_id: String,
     pub quick_status: DataQuickStatus,
 }
+
+pub fn test(input: DataResponseBazaar) {
+    // lets get the name of every item
+
+    input.products.into_iter().for_each(|(_, value)| {
+        println!("{}", value.product_id);
+    });
+}
