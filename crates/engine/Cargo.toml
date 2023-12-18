@@ -11,4 +11,4 @@ edition = "2021"
 tokio = { version = "1.34.0", features = ["macros", "rt-multi-thread"], default-features = false }
 serde = {version = "1.0.193", features = ["derive"], default-features = false}
 serde_json = { version = "1.0.108", default-features = false }
-reywen_http = {path = "/home/kaiaxc/Documents/Projects/Reywen/reywen-http", version = "0.1.17", default-features = false, features = ["serde", "hyper_engine"]}
+reywen_http = { version = "0.1.18", default-features = false, features = ["serde", "hyper_engine"]}
