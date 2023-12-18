@@ -48,6 +48,19 @@ pub struct DataQuickStatus {
     #[serde(rename = "buyOrders")]
     pub buy_orders: i32,
 }
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct DataQuickStatusSummary {
+    #[serde(rename = "productId")]
+    pub product_id: String,
+    #[serde(rename = "sellPrice")]
+    pub sell_price: f32,
+    #[serde(rename = "sellMovingWeek")]
+    pub sell_moving_week: i32,
+    #[serde(rename = "buyPrice")]
+    pub buy_price: f32,
+    #[serde(rename = "buyMovingWeek")]
+    pub buy_moving_weekly: i32,
+}
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 
@@ -58,7 +71,7 @@ pub struct DataResponseBazaarSummary {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct ProductDataSummary {
     pub product_id: String,
-    pub quick_status: DataQuickStatus,
+    pub quick_status: DataQuickStatusSummary,
 }
 
 pub fn test(input: DataResponseBazaar) {

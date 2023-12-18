@@ -1,23 +1,21 @@
-use crate::{ItemProperty, MyApp, SortBy};
-use engine::methods::bazaar::ProfitInfo;
-use engine::Hypixel;
+use crate::{structures::SortBy, MyApp};
+use engine::{methods::bazaar::ProfitInfo, Hypixel};
 use std::sync::Arc;
 
 impl MyApp {
-    pub fn click_add_find_button(&self) {
+    pub fn click_add_find_button(&mut self) {
+        let progress = Arc::clone(&self.progress);
         let runtime = Arc::clone(&self.runtime);
         let original_data = Arc::clone(&self.original_data);
+
         runtime.spawn(async move {
-            let now = std::time::SystemTime::now();
+            progress.write().unwrap().set(10.0, 470.0, 0.5);
 
-            let a = Hypixel::new().bazaar_profit().await.unwrap();
+            let new_data = Hypixel::new().bazaar_profit().await.unwrap();
 
-            let mut write = original_data.write().unwrap();
-            write.clear();
-            write.extend(a);
-
-            let done = std::time::SystemTime::now().duration_since(now);
-            println!("request elapsed: {:?}", done);
+            original_data.write().unwrap().clear();
+            original_data.write().unwrap().extend(new_data);
+            progress.write().unwrap().set_default();
         });
     }
 
@@ -29,6 +27,7 @@ impl MyApp {
             .filter(|a| {
                 // basic profitability filtering
                 a.bazaar_buy_price != 0.0
+                    && a.bazaar_sell_price != 0.0
                     && a.weekly_buy_orders != 0
                     && a.bazaar_buy_price > a.bazaar_sell_price
                 // optional search fields
@@ -39,7 +38,8 @@ impl MyApp {
                     .map(|c| if c == '_' { ' ' } else { c })
                     .collect())
                     // special case
-                && name_correct(&a.item_name, &self.search_fields.filter)
+              //  && name_correct(&a.item_name, &self.search_fields.filter.field, self.search_fields.filter.invert)
+                && self.search_fields.filter.field.check2(&a.item_name)
 
             })
             .collect();
@@ -50,35 +50,21 @@ impl MyApp {
                 polled_data.sort_by_key(|a| (a.weekly_sell_orders, a.weekly_buy_orders))
             }
             SortBy::Az => polled_data.sort_by_key(|a| a.item_name.clone()),
+            SortBy::FlipPercentage => polled_data.sort_by_key(|a| a.flip_percentage as i32),
         }
-        if self.search_fields.sort_by.inverted {
-            polled_data.reverse();
+
+        match (
+            self.search_fields.sort_by.inverted,
+            &self.search_fields.sort_by.sort_by,
+        ) {
+            // sorted
+            (false, SortBy::FlipValue) => polled_data.reverse(),
+            (false, SortBy::FlipPercentage) => polled_data.reverse(),
+
+            // standard handling
+            (true, _) => polled_data.reverse(),
+            (false, _) => {}
         }
         self.processed_data = polled_data;
-    }
-}
-
-fn name_correct(name: &str, properties: &ItemProperty) -> bool {
-    for check in properties.check() {
-        if !name.contains(check.to_ascii_uppercase().as_str()) {
-            return false;
-        }
-    }
-    true
-}
-
-impl ItemProperty {
-    fn check(&self) -> Vec<String> {
-        match self {
-            ItemProperty::Book => vec!["book"],
-            ItemProperty::Enchanted => vec!["enchanted"],
-            ItemProperty::EnchantedBlock => vec!["block", "enchanted"],
-            ItemProperty::Experience => vec!["experience"],
-            ItemProperty::Essence => vec!["essence"],
-            ItemProperty::Other => Vec::new(),
-        }
-        .iter()
-        .map(|a| a.to_string())
-        .collect()
     }
 }
