@@ -23,7 +23,7 @@ fn main() -> Result<(), eframe::Error> {
         ..Default::default()
     };
     eframe::run_native(
-        "Money Machine",
+        "Bazaar GUI",
         options,
         Box::new(|_cc| Box::<MyApp>::default()),
     )
