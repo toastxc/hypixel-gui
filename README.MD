@@ -1,7 +1,7 @@
 # Purpose
 This program provides an easy-to-use interface for monitoring and querying the Bazaar
 
-  <img src="https://github.com/toastxc/hypixel-gui/blob/main/README_RESOURCES/App.png" alt="Screenshot of App" width="40%" height="40%">
+  <img src="https://github.com/toastxc/hypixel-gui/blob/main/README_RESOURCES/App.png" alt="Screenshot of App" width="60%" height="60%">
 # Installation
 
 ## Linux
