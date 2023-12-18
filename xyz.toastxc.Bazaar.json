@@ -1,0 +1,28 @@
+  {
+   "app-id": "xyz.toastxc.Bazaar",
+   "runtime": "org.gnome.Platform",
+   "runtime-version": "45",
+   "sdk": "org.gnome.Sdk",
+   "command": "hypixel-gui",
+   "finish-args": [
+      "--share=network",
+      "--socket=wayland",
+       "--device=dri"
+   ],
+   "modules": [
+    {
+     "name": "hypixel-gui",
+     "buildsystem": "simple",
+     "build-commands": [
+       "install -D ./hypixel-gui /app/bin/hypixel-gui"
+
+     ],
+     "sources": [
+      {
+       "type": "file",
+       "path": "./hypixel-gui"
+      }
+     ]
+    }
+   ]
+  }
