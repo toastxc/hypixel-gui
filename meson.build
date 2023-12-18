@@ -7,5 +7,4 @@ project('main', 'rust',
 
 
 
-subdir('crates/gui/src')
 
