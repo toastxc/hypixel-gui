@@ -1,14 +1,18 @@
 use crate::structures::{Progress, SearchFields};
-use eframe::{HardwareAcceleration, Renderer, Theme};
+use eframe::{HardwareAcceleration, Renderer};
 use engine::methods::bazaar::ProfitInfo;
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
+
+
 
 pub mod process;
 pub mod structures;
 pub mod view;
 
 fn main() -> Result<(), eframe::Error> {
+
+
     env_logger::init();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
@@ -18,15 +22,12 @@ fn main() -> Result<(), eframe::Error> {
         hardware_acceleration: HardwareAcceleration::Preferred,
         renderer: Renderer::Glow,
         follow_system_theme: true,
-        default_theme: Theme::Dark,
         centered: false,
         ..Default::default()
     };
-    eframe::run_native(
-        "Bazaar GUI",
-        options,
-        Box::new(|_cc| Box::<MyApp>::default()),
-    )
+    eframe::run_native("Bazaar", options, Box::new(|_cc| Box::<MyApp>::default()))?;
+
+    Ok(())
 }
 
 #[derive(Debug, Clone)]
@@ -36,6 +37,7 @@ struct MyApp {
     pub original_data: Arc<RwLock<Vec<ProfitInfo>>>,
     pub processed_data: Vec<ProfitInfo>,
     pub progress: Arc<RwLock<Progress>>,
+    pub is_dark: bool,
 }
 
 impl Default for MyApp {
@@ -46,6 +48,7 @@ impl Default for MyApp {
             processed_data: vec![],
             original_data: Arc::new(RwLock::new(Vec::new())),
             progress: Arc::new(RwLock::new(Progress::default())),
+            is_dark: true,
         }
     }
 }

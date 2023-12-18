@@ -1,4 +1,4 @@
-use egui::{CollapsingHeader, CollapsingResponse, ComboBox, ProgressBar, Slider, Ui};
+use egui::{CollapsingHeader, CollapsingResponse, ComboBox, ProgressBar, Slider, Ui, Visuals};
 use std::ops::RangeInclusive;
 
 use crate::structures::{ItemPropertyF, SortBy, SortInfo};
@@ -7,12 +7,20 @@ use engine::methods::bazaar::ProfitInfo;
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        if self.is_dark {
+            ctx.set_visuals(Visuals::dark());
+        } else {
+            ctx.set_visuals(Visuals::light());
+        }
+
         egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
     }
 }
 
 fn update_fn(value: &mut MyApp, ui: &mut Ui) {
     value.calculate();
+    ui.checkbox(&mut value.is_dark, "Dark theme");
+
     search_field(ui, "Profit Margin", &mut value.search_fields.profit_total);
     search_field(ui, "Orders Total", &mut value.search_fields.order_total);
     search_field(ui, "Name", &mut value.search_fields.name);
