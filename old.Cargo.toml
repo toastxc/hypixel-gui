@@ -1,0 +1,11 @@
+
+resolver = "1"
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+
+members = [
+    "crates/engine",
+
+    "crates/gui"
+
+]
