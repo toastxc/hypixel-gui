@@ -11,20 +11,19 @@ impl MyApp {
         let original_data = Arc::clone(&self.original_data);
 
         runtime.spawn(async move {
-            progress.write().unwrap().set(10.0, 470.0, 0.5, true);
-
-            let new_data = Hypixel::new().bazaar_profit().await.unwrap();
-
-            original_data.write().unwrap().clear();
-            original_data.write().unwrap().extend(new_data);
+            progress.write().unwrap().set(15.0, 470.0, 0.5, true);
+            *original_data.write().unwrap() = Hypixel::new().bazaar_profit().await.unwrap_or_default();
             progress.write().unwrap().set_default();
         });
     }
 
     pub fn calculate(&mut self) {
-        let polled_data = self.original_data.clone();
-
-        let mut polled_data: Vec<ProfitInfo> = polled_data.read().unwrap().clone()
+        let mut polled_data: Vec<ProfitInfo> = self
+            .original_data
+            .clone()
+            .read()
+            .unwrap()
+            .clone()
             .into_iter()
             .filter(|a| {
                 // basic profitability filtering
@@ -43,7 +42,6 @@ impl MyApp {
                     .collect())
                     // special case
                 && self.search.filter.field.check3(&a.item_name, &self.search.filter.invert)
-
             })
             .collect();
 
@@ -56,10 +54,7 @@ impl MyApp {
             SortBy::FlipPercentage => polled_data.sort_by_key(|a| a.flip_percentage as i32),
         }
 
-        match (
-            self.search.sort_by.inverted,
-            &self.search.sort_by.sort_by,
-        ) {
+        match (self.search.sort_by.inverted, &self.search.sort_by.sort_by) {
             (true, SortBy::Az) => polled_data.reverse(),
             (false, SortBy::Az) => {}
 

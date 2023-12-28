@@ -1,10 +1,9 @@
 use crate::structures::{Progress, SearchFields};
 use eframe::{HardwareAcceleration, Renderer};
 
+use crate::engine::methods::bazaar::ProfitInfo;
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
-use crate::engine::methods::bazaar::ProfitInfo;
-
 
 pub mod engine;
 pub mod process;
@@ -12,13 +11,12 @@ pub mod structures;
 pub mod view;
 
 fn main() -> Result<(), eframe::Error> {
-
-
     env_logger::init();
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([480.0, 480.0])
-            .with_min_inner_size([480.0, 300.0]),
+            .with_min_inner_size([480.0, 300.0])
+            .with_transparent(true),
         vsync: true,
         hardware_acceleration: HardwareAcceleration::Preferred,
         renderer: Renderer::Glow,
@@ -26,7 +24,12 @@ fn main() -> Result<(), eframe::Error> {
         centered: false,
         ..Default::default()
     };
-    eframe::run_native("Bazaar", options, Box::new(|_cc| Box::<MyApp>::default()))?;
+
+    eframe::run_native(
+        "Bazaar",
+        options,
+        Box::new(|_cc| Box::from(MyApp::from_theme(_cc.egui_ctx.style().visuals.dark_mode))),
+    )?;
 
     Ok(())
 }
@@ -39,6 +42,16 @@ struct MyApp {
     pub processed_data: Vec<ProfitInfo>,
     pub progress: Arc<RwLock<Progress>>,
     pub is_dark: bool,
+}
+
+impl MyApp {
+    pub fn from_theme(theme: bool) -> Self {
+        Self::default().set_theme(theme)
+    }
+    pub fn set_theme(&mut self, is_dark: bool) -> Self {
+        self.is_dark = is_dark;
+        self.clone()
+    }
 }
 
 impl Default for MyApp {

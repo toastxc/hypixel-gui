@@ -1,11 +1,12 @@
-
+use crate::engine::data::bazaar::{
+    DataResponseBazaar, DataResponseBazaarSummary, ProductDataSummary,
+};
+use crate::engine::Hypixel;
 use reywen_http::{
     self,
     engines::hyper::{Method, Result},
 };
 use serde::{Deserialize, Serialize};
-use crate::engine::data::bazaar::{DataResponseBazaar, DataResponseBazaarSummary, ProductDataSummary};
-use crate::engine::Hypixel;
 
 impl Hypixel {
     pub async fn bazaar_get(&self) -> Result<DataResponseBazaar> {
