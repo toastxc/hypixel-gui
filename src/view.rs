@@ -1,19 +1,22 @@
 use crate::engine::methods::bazaar::ProfitInfo;
 use egui::{CollapsingHeader, CollapsingResponse, ComboBox, ProgressBar, Slider, Ui, Visuals};
 use std::ops::RangeInclusive;
+use eframe::egui::Context;
+use eframe::Frame;
+use material_egui::MaterialColors;
 
 use crate::structures::{ItemPropertyF, SortBy, SortInfo};
 use crate::MyApp;
 
 impl eframe::App for MyApp {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if self.is_dark {
-            ctx.set_visuals(Visuals::dark());
-        } else {
-            ctx.set_visuals(Visuals::light());
-        }
 
-        egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
+
+    fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+
+            // material_egui::apply("ff69b4".to_string(), self.is_dark, 1.5, ctx);
+
+        MaterialColors::new("ff69b4".to_string(), self.is_dark, 1.25).apply(ctx);
+            egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
     }
 }
 

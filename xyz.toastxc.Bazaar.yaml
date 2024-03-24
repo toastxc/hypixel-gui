@@ -1,0 +1,22 @@
+id: xyz.toastxc.Bazaaar
+runtime: org.freedesktop.Platform
+runtime-version: '23.08'
+sdk: org.freedesktop.Sdk
+command: hypixel-gui
+finish-args: [
+  "--share=network",
+  "--socket=x11",
+  "--device=dri"
+]
+modules:
+  - name: hello
+    buildsystem: simple
+    build-commands:
+      - install -D hypixel-gui /app/bin/hypixel-gui
+    sources:
+      - type: file
+        path: hypixel-gui
+
+
+
+

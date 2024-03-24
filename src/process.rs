@@ -12,7 +12,8 @@ impl MyApp {
 
         runtime.spawn(async move {
             progress.write().unwrap().set(15.0, 470.0, 0.5, true);
-            *original_data.write().unwrap() = Hypixel::new().bazaar_profit().await.unwrap_or_default();
+            *original_data.write().unwrap() =
+                Hypixel::new().bazaar_profit().await.unwrap_or_default();
             progress.write().unwrap().set_default();
         });
     }
