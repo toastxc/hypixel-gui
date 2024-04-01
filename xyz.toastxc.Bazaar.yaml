@@ -1,4 +1,4 @@
-id: xyz.toastxc.Bazaaar
+id: xyz.toastxc.Bazaar
 runtime: org.freedesktop.Platform
 runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
@@ -15,8 +15,12 @@ modules:
       - install -D hypixel-gui /app/bin/hypixel-gui
     sources:
       - type: file
-        path: hypixel-gui
+        path: ./target/release/hypixel-gui
 
-
-
-
+  - name: desktop  # Keep the name for clarity
+    buildsystem: simple
+    build-commands:
+      - install -D xyz.toastxc.Bazaar.desktop /app/share/applications/xyz.toastxc.Bazaar.desktop  # Updated path
+    sources:
+      - type: file
+        path: xyz.toastxc.Bazaar.desktop

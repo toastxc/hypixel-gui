@@ -42,6 +42,7 @@ struct MyApp {
     pub processed_data: Vec<ProfitInfo>,
     pub progress: Arc<RwLock<Progress>>,
     pub is_dark: bool,
+    pub first_run: bool,
 }
 
 impl MyApp {
@@ -63,6 +64,7 @@ impl Default for MyApp {
             original_data: Arc::new(RwLock::new(Vec::new())),
             progress: Arc::new(RwLock::new(Progress::default())),
             is_dark: true,
+            first_run: true,
         }
     }
 }
