@@ -5,4 +5,4 @@ Name=Bazaar
 GenericName=Hypixel
 Terminal=false
 #Icon=xyz.toastxc.Bazaar
-Exec=xyz.toastxc.Bazaar
+Exec=hypixel-gui
