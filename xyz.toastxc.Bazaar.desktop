@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Bazaar
+GenericName=Hypixel
+Terminal=false
+#Icon=xyz.toastxc.Bazaar
+Exec=xyz.toastxc.Bazaar
