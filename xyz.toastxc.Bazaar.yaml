@@ -1,26 +1,33 @@
+
 id: xyz.toastxc.Bazaar
 runtime: org.freedesktop.Platform
 runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 command: hypixel-gui
-finish-args: [
-  "--share=network",
-  "--socket=x11",
-  "--device=dri"
-]
+finish-args:
+  - --share=network
+  - --socket=x11
+  - --device=dri
 modules:
-  - name: hello
+  - name: app
     buildsystem: simple
     build-commands:
       - install -D hypixel-gui /app/bin/hypixel-gui
     sources:
       - type: file
         path: ./target/release/hypixel-gui
-
-  - name: desktop  # Keep the name for clarity
+  - name: icon
     buildsystem: simple
     build-commands:
-      - install -D xyz.toastxc.Bazaar.desktop /app/share/applications/xyz.toastxc.Bazaar.desktop  # Updated path
+      - install -D hypixel-gui-128.png /app/share/icons/hicolor/128x128/apps/xyz.toastxc.Bazaar.png
+    sources:
+      - type: file
+        path: ./icons/hypixel-gui-128.png
+  - name: desktop
+    buildsystem: simple
+    build-commands:
+      - install -D xyz.toastxc.Bazaar.desktop /app/share/applications/xyz.toastxc.Bazaar.desktop
     sources:
       - type: file
         path: xyz.toastxc.Bazaar.desktop
+
