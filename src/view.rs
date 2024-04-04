@@ -15,7 +15,9 @@ impl eframe::App for MyApp {
                 storage
                     .get_string("dark")
                     .map(|a| a.parse::<bool>().map(|dark| self.is_dark = dark));
-                storage.get_string("search").map(|name| self.search.name = name);
+                if let Some(name) = storage.get_string("search") {
+                    self.search.name = name
+                }
             };
         };
 
