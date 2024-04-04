@@ -26,6 +26,10 @@ impl MyApp {
             .unwrap()
             .clone()
             .into_iter()
+            .map(|mut a| {
+                a.item_name = a.item_name.replace(['-', '_'], " ");
+                a
+            })
             .filter(|a| {
                 // basic profitability filtering
                 a.bazaar_buy_price >= self.search.min_buy_val as f32
@@ -38,9 +42,7 @@ impl MyApp {
                 && { a.weekly_buy_orders + a.weekly_sell_orders } as i64
                      > self.search.order_total as i64
                 && a.flip_value > self.search.profit as f32
-                && a.item_name.contains::<&String>(&self.search.name.to_ascii_uppercase().chars()
-                    .map(|c| if c == '_' { ' ' } else { c })
-                    .collect())
+                && a.item_name.contains::<&String>(&self.search.name.to_ascii_uppercase())
                     // special case
                 && self.search.filter.field.check3(&a.item_name, &self.search.filter.invert)
             })
