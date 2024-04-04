@@ -1,0 +1,14 @@
+app_id="xyz.toastxc.Bazaar"
+app_name="Bazaar"
+profile="release"
+
+permissions = [
+    "--share=network",
+    "--socket=x11",
+    "--device=dri"
+]
+
+[desktopfile]
+terminal= false
+
+
