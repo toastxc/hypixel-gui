@@ -2,16 +2,37 @@ use crate::engine::methods::bazaar::ProfitInfo;
 use crate::structures::{ItemPropertyF, SortBy, SortInfo};
 use crate::MyApp;
 use eframe::egui::Context;
-use eframe::Frame;
+use eframe::{Frame, Storage};
 use egui::{CollapsingHeader, CollapsingResponse, ComboBox, ProgressBar, Slider, Ui};
 use material_egui::MaterialColors;
 use std::ops::RangeInclusive;
+use std::time::Duration;
 
 impl eframe::App for MyApp {
     fn update(&mut self, ctx: &Context, _frame: &mut Frame) {
+        if self.first_run {
+            if let Some(storage) = _frame.storage() {
+                storage
+                    .get_string("dark")
+                    .map(|a| a.parse::<bool>().map(|dark| self.is_dark = dark));
+                storage.get_string("search").map(|name| self.search.name = name);
+            };
+        };
+
         MaterialColors::new("#448EDF".to_string(), self.is_dark, 1.25)
             .apply_zoom(ctx, &mut self.first_run);
         egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
+    }
+
+    fn persist_egui_memory(&self) -> bool {
+        true
+    }
+    fn auto_save_interval(&self) -> Duration {
+        Duration::from_secs(5)
+    }
+    fn save(&mut self, _storage: &mut dyn Storage) {
+        _storage.set_string("dark", self.is_dark.to_string());
+        _storage.set_string("search", self.search.name.clone());
     }
 }
 
