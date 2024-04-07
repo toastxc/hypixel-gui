@@ -4,7 +4,8 @@ profile="release"
 
 permissions = [
     "--share=network",
-    "--socket=x11",
+    "--socket=fallback-x11",
+    "--socket=wayland",
     "--device=dri"
 ]
 
