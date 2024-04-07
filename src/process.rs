@@ -57,13 +57,14 @@ impl MyApp {
             SortBy::FlipPercentage => polled_data.sort_by_key(|a| a.flip_percentage as i32),
         }
 
-        match (self.search.sort_by.inverted, &self.search.sort_by.sort_by) {
-            (true, SortBy::Az) => polled_data.reverse(),
-            (false, SortBy::Az) => {}
-
-            (true, _) => {}
-            (false, _) => polled_data.reverse(),
+        if !self.search.sort_by.inverted {
+            polled_data.reverse()
         }
+
+        if &self.search.sort_by.sort_by == &SortBy::Az {
+            polled_data.reverse()
+        };
+
         self.processed_data = polled_data;
     }
 }
