@@ -20,7 +20,9 @@ impl eframe::App for MyApp {
                 }
             };
 
-            self.click_add_find_button();
+            self.bazaar_get(ctx.clone());
+
+
 
         };
 
@@ -63,7 +65,7 @@ fn update_fn(value: &mut MyApp, ui: &mut Ui) {
     // UI buttons
     ui.horizontal(|ui| {
         if ui.button("Poll").clicked() {
-            value.click_add_find_button();
+            value.bazaar_get(ui.ctx().clone());
         }
     });
 
@@ -139,9 +141,15 @@ pub fn product_container(
             .collect::<String>(),
     )
     .show_background(background)
+
     .show(ui, |ui| {
         ui.label(inner.display_new(dp as usize));
+        if let Some(cat) = &inner.metadata {
+            ui.label(&cat.id);
+        };
     })
+
+
 }
 
 fn slider(ui: &mut Ui, label: &str, max: u32, value: &mut u32) {

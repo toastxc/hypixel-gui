@@ -7,15 +7,16 @@ use reywen_http::{
     engines::hyper::{Method, Result},
 };
 use serde::{Deserialize, Serialize};
+use crate::engine::data::item::Item;
 
 impl Hypixel {
-    pub async fn bazaar_get(&self) -> Result<DataResponseBazaar> {
-        self.engine.request(Method::GET, "bazaar", None).await
+    async fn full_bazaar_get(&self) -> Result<DataResponseBazaar> {
+        self.engine.request(Method::GET, "skyblock/bazaar", None).await
     }
-    pub async fn bazaar_profit(&self) -> Result<Vec<ProfitInfo>> {
+    pub async fn bazaar_get(&self) -> Result<Vec<ProfitInfo>> {
         Ok(self
             .engine
-            .request::<DataResponseBazaarSummary>(Method::GET, "bazaar", None)
+            .request::<DataResponseBazaarSummary>(Method::GET, "skyblock/bazaar", None)
             .await?
             .products
             .into_values()
@@ -33,6 +34,7 @@ pub struct ProfitInfo {
     pub flip_percentage: f32,
     pub weekly_buy_orders: i32,
     pub weekly_sell_orders: i32,
+    pub metadata: Option<Item>,
 }
 
 impl ProfitInfo {
@@ -71,6 +73,7 @@ impl From<ProductDataSummary> for ProfitInfo {
                 - (value.quick_status.sell_price / value.quick_status.buy_price) * 100.0,
             weekly_buy_orders: value.quick_status.buy_moving_weekly,
             weekly_sell_orders: value.quick_status.sell_moving_week,
+            metadata: None,
         }
     }
 }

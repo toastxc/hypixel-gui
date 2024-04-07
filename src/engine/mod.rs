@@ -10,17 +10,19 @@ pub use results::Error;
 pub mod data;
 pub mod methods;
 
+const URL: &str = "https://api.hypixel.net/v2/";
+
 impl Hypixel {
     pub fn new() -> Self {
         Self {
             api_key: None,
-            engine: Hyper::new().set_url("https://api.hypixel.net/v2/skyblock/"),
+            engine: Hyper::new().set_url(URL),
         }
     }
     pub fn new_with_key(api_key: impl Into<String>) -> Self {
         Self {
             api_key: Some(api_key.into()),
-            engine: Hyper::new().set_url("https://api.hypixel.net/v2/skyblock/"),
+            engine: Hyper::new().set_url(URL),
         }
     }
 }

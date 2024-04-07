@@ -5,15 +5,28 @@ use crate::engine::Hypixel;
 use std::sync::Arc;
 
 impl MyApp {
-    pub fn click_add_find_button(&mut self) {
+    pub fn bazaar_get(&mut self, ctx: egui::Context) {
         let progress = Arc::clone(&self.progress);
         let runtime = Arc::clone(&self.runtime);
         let original_data = Arc::clone(&self.original_data);
 
         runtime.spawn(async move {
-            progress.write().unwrap().set(15.0, 470.0, 0.5, true);
-            *original_data.write().unwrap() =
-                Hypixel::new().bazaar_profit().await.unwrap_or_default();
+            progress
+                .write()
+                .unwrap()
+                .set(15.0, ctx.available_rect().width(), 0.5, true);
+
+            let mut bazaar = Hypixel::new().bazaar_get().await.unwrap_or_default();
+
+            if let Ok(items) = Hypixel::new().items_get().await {
+                for mut x in &mut bazaar {
+                    if let Some(item) = items.get(&x.item_name) {
+                        x.metadata = Some(item.clone());
+                    }
+                }
+            };
+            *original_data.write().unwrap() = bazaar;
+
             progress.write().unwrap().set_default();
         });
     }
