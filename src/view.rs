@@ -19,6 +19,9 @@ impl eframe::App for MyApp {
                     self.search.name = name
                 }
             };
+
+            self.click_add_find_button();
+
         };
 
         MaterialColors::new("#448EDF".to_string(), self.is_dark, 1.25)
