@@ -2,13 +2,8 @@ use crate::engine::methods::bazaar::ProfitInfo;
 use crate::structures::{ItemPropertyF, SortBy, SortInfo};
 use crate::MyApp;
 use eframe::egui::Context;
-use eframe::emath::Align;
 use eframe::{Frame, Storage};
-use egui::panel::Side;
-use egui::{
-    Align2, CollapsingHeader, CollapsingResponse, Color32, ComboBox, FontId, Id, Layout,
-    ProgressBar, RichText, Slider, Stroke, Style, Ui, Vec2,
-};
+use egui::{CollapsingHeader, ComboBox, FontId, ProgressBar, RichText, Slider, Ui};
 use material_egui::MaterialColors;
 use std::ops::RangeInclusive;
 use std::time::Duration;
@@ -56,7 +51,7 @@ impl eframe::App for MyApp {
     }
 }
 
-fn side_panel(ctx: &Context, ui: &mut Ui, value: &mut MyApp) {
+fn side_panel(_ctx: &Context, ui: &mut Ui, value: &mut MyApp) {
     let Some(data) = value.side_menu.data.clone() else {
         return;
     };
@@ -121,7 +116,7 @@ fn update_fn(value: &mut MyApp, ui: &mut Ui) {
     egui::ScrollArea::vertical()
         .auto_shrink([false; 2])
         .show(ui, |ui| {
-            for (index, item) in value.processed_data.iter().enumerate() {
+            for item in value.processed_data.iter() {
                 product_container(item, ui, &mut value.side_menu);
             }
         });
@@ -193,7 +188,7 @@ pub fn product_container(inner: &ProfitInfo, ui: &mut Ui, side_menu: &mut SideMe
             .collect::<String>(),
     )
     .open(Some(false))
-    .show(ui, |ui| {});
+    .show(ui, |_| {});
 
     if a.header_response.clicked() {
         side_menu.swap(inner.clone());

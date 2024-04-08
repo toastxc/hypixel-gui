@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-struct Stats {
+pub struct Stats {
     #[serde(rename = "DEFENSE")]
     pub defense: Option<i64>,
     #[serde(rename = "HEALTH")]
@@ -29,7 +29,8 @@ pub enum TierEnum {
     MYTHIC,
     SUPREME,
     SPECIAL,
-    VERY_SPECIAL,
+    #[serde(rename = "VERY_SPECIAL")]
+    VerySpecial,
     UNOBTAINABLE,
 }
 impl Display for TierEnum {
@@ -43,7 +44,7 @@ impl Display for TierEnum {
             TierEnum::MYTHIC => "Mythic",
             TierEnum::SUPREME => "Supreme",
             TierEnum::SPECIAL => "Special",
-            TierEnum::VERY_SPECIAL => "Very Special",
+            TierEnum::VerySpecial => "Very Special",
             TierEnum::UNOBTAINABLE => "UNOBTAINABLE",
         }
         .to_string();

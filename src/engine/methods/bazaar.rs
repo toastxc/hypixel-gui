@@ -1,18 +1,16 @@
-use crate::engine::data::bazaar::{
-    DataResponseBazaar, DataResponseBazaarSummary, ProductDataSummary,
-};
+use crate::engine::data::bazaar::{DataResponseBazaarSummary, ProductDataSummary};
+use crate::engine::data::item::Item;
 use crate::engine::Hypixel;
 use reywen_http::{
     self,
     engines::hyper::{Method, Result},
 };
 use serde::{Deserialize, Serialize};
-use crate::engine::data::item::Item;
 
 impl Hypixel {
-    async fn full_bazaar_get(&self) -> Result<DataResponseBazaar> {
-        self.engine.request(Method::GET, "skyblock/bazaar", None).await
-    }
+    // async fn full_bazaar_get(&self) -> Result<DataResponseBazaar> {
+    //     self.engine.request(Method::GET, "skyblock/bazaar", None).await
+    // }
     pub async fn bazaar_get(&self) -> Result<Vec<ProfitInfo>> {
         Ok(self
             .engine

@@ -2,9 +2,9 @@ use crate::structures::{Progress, SearchFields};
 use eframe::{HardwareAcceleration, Renderer};
 
 use crate::engine::methods::bazaar::ProfitInfo;
+use crate::view::SideMenu;
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
-use crate::view::SideMenu;
 
 pub mod engine;
 pub mod process;

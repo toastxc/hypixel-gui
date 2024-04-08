@@ -19,7 +19,7 @@ impl MyApp {
             let mut bazaar = Hypixel::new().bazaar_get().await.unwrap_or_default();
 
             if let Ok(items) = Hypixel::new().items_get().await {
-                for mut x in &mut bazaar {
+                for x in &mut bazaar {
                     if let Some(item) = items.get(&x.item_name) {
                         x.metadata = Some(item.clone());
                     }
@@ -74,7 +74,7 @@ impl MyApp {
             polled_data.reverse()
         }
 
-        if &self.search.sort_by.sort_by == &SortBy::Az {
+        if self.search.sort_by.sort_by == SortBy::Az {
             polled_data.reverse()
         };
 
