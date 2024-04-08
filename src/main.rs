@@ -4,6 +4,7 @@ use eframe::{HardwareAcceleration, Renderer};
 use crate::engine::methods::bazaar::ProfitInfo;
 use std::sync::{Arc, RwLock};
 use tokio::runtime::Runtime;
+use crate::view::SideMenu;
 
 pub mod engine;
 pub mod process;
@@ -43,6 +44,7 @@ struct MyApp {
     pub progress: Arc<RwLock<Progress>>,
     pub is_dark: bool,
     pub first_run: bool,
+    pub side_menu: SideMenu,
 }
 
 impl MyApp {
@@ -65,6 +67,7 @@ impl Default for MyApp {
             progress: Arc::new(RwLock::new(Progress::default())),
             is_dark: true,
             first_run: true,
+            side_menu: SideMenu::new(),
         }
     }
 }
