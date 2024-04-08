@@ -2,8 +2,13 @@ use crate::engine::methods::bazaar::ProfitInfo;
 use crate::structures::{ItemPropertyF, SortBy, SortInfo};
 use crate::MyApp;
 use eframe::egui::Context;
+use eframe::emath::Align;
 use eframe::{Frame, Storage};
-use egui::{CollapsingHeader, CollapsingResponse, ComboBox, ProgressBar, Slider, Ui};
+use egui::panel::Side;
+use egui::{
+    Align2, CollapsingHeader, CollapsingResponse, Color32, ComboBox, FontId, Id, Layout,
+    ProgressBar, RichText, Slider, Stroke, Style, Ui, Vec2,
+};
 use material_egui::MaterialColors;
 use std::ops::RangeInclusive;
 use std::time::Duration;
@@ -21,14 +26,22 @@ impl eframe::App for MyApp {
             };
 
             self.bazaar_get(ctx.clone());
-
-
-
         };
 
         MaterialColors::new("#448EDF".to_string(), self.is_dark, 1.25)
             .apply_zoom(ctx, &mut self.first_run);
+
         egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
+
+        if self.side_menu.open {
+            // panic!();
+
+            egui::SidePanel::right("RightPanel")
+                .resizable(false)
+                .exact_width(ctx.available_rect().width() / 2.)
+                // .frame(Frame)
+                .show(ctx, |ui| side_panel(ctx, ui, self));
+        };
     }
 
     fn persist_egui_memory(&self) -> bool {
@@ -40,6 +53,33 @@ impl eframe::App for MyApp {
     fn save(&mut self, _storage: &mut dyn Storage) {
         _storage.set_string("dark", self.is_dark.to_string());
         _storage.set_string("search", self.search.name.clone());
+    }
+}
+
+fn side_panel(ctx: &Context, ui: &mut Ui, value: &mut MyApp) {
+    let Some(data) = value.side_menu.data.clone() else {
+        return;
+    };
+
+    ui.horizontal(|ui| {
+        ui.label(RichText::new(&data.item_name).font(FontId::proportional(20.)));
+        if ui.button("Close").clicked() {
+            value.side_menu.close();
+        };
+    });
+    ui.label(&data.display());
+    let Some(meta) = data.metadata else {
+        ui.add_space(20.);
+        ui.label("No metadata is available for this item*");
+        return;
+    };
+
+    if let Some(npc) = meta.npc_sell_price {
+        ui.label(format!("NPC sell price: {}", npc));
+    }
+
+    if let Some(tier) = meta.tier {
+        ui.label(format!("Tier: {}", tier));
     }
 }
 
@@ -82,7 +122,7 @@ fn update_fn(value: &mut MyApp, ui: &mut Ui) {
         .auto_shrink([false; 2])
         .show(ui, |ui| {
             for (index, item) in value.processed_data.iter().enumerate() {
-                product_container(item, ui, value.search.dp, (index % 2) != 0);
+                product_container(item, ui, &mut value.side_menu);
             }
         });
 }
@@ -126,13 +166,25 @@ fn container_filter(ui: &mut Ui, filter: &mut ItemPropertyF, invert: &mut bool) 
     });
 }
 
-pub fn product_container(
-    inner: &ProfitInfo,
-    ui: &mut Ui,
-    dp: u32,
-    background: bool,
-) -> CollapsingResponse<()> {
-    CollapsingHeader::new(
+pub fn product_container(inner: &ProfitInfo, ui: &mut Ui, side_menu: &mut SideMenu) {
+    // CollapsingHeader::new(
+    //     inner
+    //         .item_name
+    //         .to_ascii_lowercase()
+    //         .chars()
+    //         .map(|c| if c == '_' { ' ' } else { c })
+    //         .collect::<String>(),
+    // )
+    // .show_background(background)
+    //
+    // .show(ui, |ui| {
+    //     ui.label(inner.display_new(dp as usize));
+    //     if let Some(cat) = &inner.metadata {
+    //         ui.label(&cat.id);
+    //     };
+    // })
+
+    let a = CollapsingHeader::new(
         inner
             .item_name
             .to_ascii_lowercase()
@@ -140,16 +192,35 @@ pub fn product_container(
             .map(|c| if c == '_' { ' ' } else { c })
             .collect::<String>(),
     )
-    .show_background(background)
+    .open(Some(false))
+    .show(ui, |ui| {});
 
-    .show(ui, |ui| {
-        ui.label(inner.display_new(dp as usize));
-        if let Some(cat) = &inner.metadata {
-            ui.label(&cat.id);
-        };
-    })
-
-
+    if a.header_response.clicked() {
+        side_menu.swap(inner.clone());
+    }
+}
+#[derive(Debug, Clone, Default)]
+pub struct SideMenu {
+    open: bool,
+    data: Option<ProfitInfo>,
+}
+impl SideMenu {
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn open(&mut self, data: ProfitInfo) {
+        self.open = true;
+        self.data = Some(data);
+    }
+    pub fn close(&mut self) {
+        *self = Default::default()
+    }
+    pub fn swap(&mut self, data: ProfitInfo) {
+        match self.clone().data.map(|a| a.item_name == data.item_name) {
+            Some(true) => self.close(),
+            _ => self.open(data),
+        }
+    }
 }
 
 fn slider(ui: &mut Ui, label: &str, max: u32, value: &mut u32) {
