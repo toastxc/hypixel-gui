@@ -37,9 +37,9 @@ pub struct SortInfo {
 }
 #[derive(Debug, PartialEq, Clone, Default)]
 pub enum SortBy {
-    #[default]
     FlipValue,
     WeeklyOrders,
+    #[default]
     Az,
     FlipPercentage,
 }
