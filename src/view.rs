@@ -158,31 +158,15 @@ fn container_filter(ui: &mut Ui, filter: &mut ItemPropertyF, invert: &mut bool) 
         if filter == &mut ItemPropertyF::Other {
             *invert = false;
         };
-        ui.add_enabled(filter != &mut ItemPropertyF::Other, Checkbox::new(invert, "Inverted"));
-
-        // ui.checkbox(invert, "Inverted");
+        ui.add_enabled(
+            filter != &mut ItemPropertyF::Other,
+            Checkbox::new(invert, "Inverted"),
+        );
     });
 }
 
 pub fn product_container(inner: &ProfitInfo, ui: &mut Ui, side_menu: &mut SideMenu) {
-    // CollapsingHeader::new(
-    //     inner
-    //         .item_name
-    //         .to_ascii_lowercase()
-    //         .chars()
-    //         .map(|c| if c == '_' { ' ' } else { c })
-    //         .collect::<String>(),
-    // )
-    // .show_background(background)
-    //
-    // .show(ui, |ui| {
-    //     ui.label(inner.display_new(dp as usize));
-    //     if let Some(cat) = &inner.metadata {
-    //         ui.label(&cat.id);
-    //     };
-    // })
-
-    let a = CollapsingHeader::new(
+    if CollapsingHeader::new(
         inner
             .item_name
             .to_ascii_lowercase()
@@ -191,9 +175,10 @@ pub fn product_container(inner: &ProfitInfo, ui: &mut Ui, side_menu: &mut SideMe
             .collect::<String>(),
     )
     .open(Some(false))
-    .show(ui, |_| {});
-
-    if a.header_response.clicked() {
+    .show(ui, |_| {})
+    .header_response
+    .clicked()
+    {
         side_menu.swap(inner.clone());
     }
 }

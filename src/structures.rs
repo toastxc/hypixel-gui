@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 #[derive(Debug, Clone, Default)]
 pub struct Progress {
     pub height: f32,
@@ -44,15 +46,16 @@ pub enum SortBy {
     FlipPercentage,
 }
 
-impl ToString for SortBy {
-    fn to_string(&self) -> String {
-        match self {
+impl Display for SortBy {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = match self {
             SortBy::FlipValue => "Flip Value",
             SortBy::WeeklyOrders => "Weekly Orders",
             SortBy::Az => "A-Z",
             SortBy::FlipPercentage => "Flip Percentage",
         }
-        .to_string()
+            .to_string();
+        write!(f, "{}", str)
     }
 }
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -72,13 +75,14 @@ pub struct ItemProperty {
     pub field: ItemPropertyF,
 }
 
-impl ToString for ItemPropertyF {
-    fn to_string(&self) -> String {
-        if self == &Self::Other {
+impl Display for ItemPropertyF {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let str = if self == &Self::Other {
             "None".to_string()
         } else {
             self.include().into_iter().map(|a| a + " ").collect()
-        }
+        };
+        write!(f, "{}", str)
     }
 }
 
