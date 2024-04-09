@@ -3,7 +3,7 @@ use crate::structures::{ItemPropertyF, SortBy, SortInfo};
 use crate::MyApp;
 use eframe::egui::Context;
 use eframe::{Frame, Storage};
-use egui::{CollapsingHeader, ComboBox, FontId, ProgressBar, RichText, Slider, Ui};
+use egui::{Checkbox, CollapsingHeader, Color32, ComboBox, FontId, RichText, Slider, Spinner, Ui};
 use material_egui::MaterialColors;
 use std::ops::RangeInclusive;
 use std::time::Duration;
@@ -29,8 +29,6 @@ impl eframe::App for MyApp {
         egui::CentralPanel::default().show(ctx, |ui| update_fn(self, ui));
 
         if self.side_menu.open {
-            // panic!();
-
             egui::SidePanel::right("RightPanel")
                 .resizable(false)
                 .exact_width(ctx.available_rect().width() / 2.)
@@ -39,15 +37,15 @@ impl eframe::App for MyApp {
         };
     }
 
-    fn persist_egui_memory(&self) -> bool {
-        true
+    fn save(&mut self, _storage: &mut dyn Storage) {
+        _storage.set_string("dark", self.is_dark.to_string());
+        _storage.set_string("search", self.search.name.clone());
     }
     fn auto_save_interval(&self) -> Duration {
         Duration::from_secs(5)
     }
-    fn save(&mut self, _storage: &mut dyn Storage) {
-        _storage.set_string("dark", self.is_dark.to_string());
-        _storage.set_string("search", self.search.name.clone());
+    fn persist_egui_memory(&self) -> bool {
+        true
     }
 }
 
@@ -55,7 +53,6 @@ fn side_panel(_ctx: &Context, ui: &mut Ui, value: &mut MyApp) {
     let Some(data) = value.side_menu.data.clone() else {
         return;
     };
-
     ui.horizontal(|ui| {
         ui.label(RichText::new(&data.item_name).font(FontId::proportional(20.)));
         if ui.button("Close").clicked() {
@@ -98,18 +95,18 @@ fn update_fn(value: &mut MyApp, ui: &mut Ui) {
     sort_combo_box(&mut value.search.sort_by, ui);
 
     // UI buttons
-    ui.horizontal(|ui| {
-        if ui.button("Poll").clicked() {
-            value.bazaar_get(ui.ctx().clone());
-        }
-    });
 
-    ui.add(
-        ProgressBar::new(value.progress.read().unwrap().percentage)
-            .desired_height(value.progress.read().unwrap().height)
-            .desired_width(value.progress.read().unwrap().width)
-            .animate(value.progress.read().unwrap().animated),
-    );
+    let spinner = *value.spinner_visible.read().unwrap();
+
+    ui.horizontal(|ui| {
+        ui.add_enabled_ui(!spinner, |ui| {
+            if ui.button("Poll").clicked() {
+                value.bazaar_get(ui.ctx().clone());
+            };
+        });
+
+        ui.add_visible(spinner, Spinner::new().color(Color32::WHITE));
+    });
 
     ui.separator();
 
@@ -157,7 +154,13 @@ fn container_filter(ui: &mut Ui, filter: &mut ItemPropertyF, invert: &mut bool) 
                 ui.selectable_value(filter, ItemPropertyF::Enchanted, "Enchanted");
                 ui.selectable_value(filter, ItemPropertyF::Essence, "Essence");
             });
-        ui.checkbox(invert, "Inverted");
+
+        if filter == &mut ItemPropertyF::Other {
+            *invert = false;
+        };
+        ui.add_enabled(filter != &mut ItemPropertyF::Other, Checkbox::new(invert, "Inverted"));
+
+        // ui.checkbox(invert, "Inverted");
     });
 }
 

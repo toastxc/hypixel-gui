@@ -1,4 +1,4 @@
-use crate::structures::{Progress, SearchFields};
+use crate::structures::SearchFields;
 use eframe::{HardwareAcceleration, Renderer};
 
 use crate::engine::methods::bazaar::ProfitInfo;
@@ -41,10 +41,10 @@ struct MyApp {
     pub runtime: Arc<Runtime>,
     pub original_data: Arc<RwLock<Vec<ProfitInfo>>>,
     pub processed_data: Vec<ProfitInfo>,
-    pub progress: Arc<RwLock<Progress>>,
     pub is_dark: bool,
     pub first_run: bool,
     pub side_menu: SideMenu,
+    pub spinner_visible: Arc<RwLock<bool>>,
 }
 
 impl MyApp {
@@ -64,10 +64,10 @@ impl Default for MyApp {
             search: Default::default(),
             processed_data: vec![],
             original_data: Arc::new(RwLock::new(Vec::new())),
-            progress: Arc::new(RwLock::new(Progress::default())),
             is_dark: true,
             first_run: true,
             side_menu: SideMenu::new(),
+            spinner_visible: Arc::new(RwLock::new(false)),
         }
     }
 }

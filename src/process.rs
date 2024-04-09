@@ -5,17 +5,13 @@ use crate::engine::Hypixel;
 use std::sync::Arc;
 
 impl MyApp {
-    pub fn bazaar_get(&mut self, ctx: egui::Context) {
-        let progress = Arc::clone(&self.progress);
+    pub fn bazaar_get(&mut self, _ctx: egui::Context) {
+        let progress = Arc::clone(&self.spinner_visible);
         let runtime = Arc::clone(&self.runtime);
         let original_data = Arc::clone(&self.original_data);
 
         runtime.spawn(async move {
-            progress
-                .write()
-                .unwrap()
-                .set(15.0, ctx.available_rect().width(), 0.5, true);
-
+            *progress.write().unwrap() = true;
             let mut bazaar = Hypixel::new().bazaar_get().await.unwrap_or_default();
 
             if let Ok(items) = Hypixel::new().items_get().await {
@@ -27,7 +23,7 @@ impl MyApp {
             };
             *original_data.write().unwrap() = bazaar;
 
-            progress.write().unwrap().set_default();
+            *progress.write().unwrap() = false;
         });
     }
 
